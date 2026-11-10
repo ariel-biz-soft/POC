@@ -388,7 +388,7 @@ export default function Reports() {
             </div>
           ))}
           <p className="sub2" style={{ marginTop: 12, fontSize: 12 }}>
-            דוח נכון לתאריך {dmy(today)}. © 2026 <CompLTDNamePlaceHolder> — קניין רוחני בלעדי, סודי ומיועד למורשים בלבד.
+            דוח נכון לתאריך {dmy(today)}. © 2026 {'<CompLTDNamePlaceHolder>'} — קניין רוחני בלעדי, סודי ומיועד למורשים בלבד.
           </p>
         </div>
       )}

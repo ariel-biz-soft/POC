@@ -34,7 +34,7 @@ export default function Layout() {
       </main>
 
       <footer className="ip">
-        © 2026 <CompLTDNamePlaceHolder>. כל הזכויות שמורות. מערכת זו קניין רוחני בלעדי של <CompNamePlaceHolder>, סודי ומיועד למורשים בלבד.
+        © 2026 {'<CompLTDNamePlaceHolder>'}. כל הזכויות שמורות. מערכת זו קניין רוחני בלעדי של {'<CompNamePlaceHolder>'}, סודי ומיועד למורשים בלבד.
       </footer>
     </>
   );

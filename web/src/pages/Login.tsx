@@ -81,7 +81,7 @@ export default function Login() {
         </button>
 
         <div className="note">
-          🔒 חיבור מוצפן. המידע קניין רוחני של <CompLTDNamePlaceHolder>, סודי ומיועד למורשים בלבד.
+          🔒 חיבור מוצפן. המידע קניין רוחני של {'<CompLTDNamePlaceHolder>'}, סודי ומיועד למורשים בלבד.
         </div>
       </form>
     </div>
