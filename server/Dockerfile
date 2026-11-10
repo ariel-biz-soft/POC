@@ -23,4 +23,4 @@ COPY prisma ./prisma
 EXPOSE 4000
 # יוצר/מסנכרן את טבלאות המסד מהסכמה (db push) ואז מפעיל את השרת.
 # זריעה ראשונית (חד-פעמית) מריצים ידנית ב-Shell: node dist/prisma/seed.js
-CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/src/server.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/src/server.js && node dist/prisma/seed.js"]
