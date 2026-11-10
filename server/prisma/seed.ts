@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { env } from '../src/env';
-import { SUPPLIERS_REAL, CUSTOMERS_REAL } from './real-accounts';
 
 const prisma = new PrismaClient();
 
@@ -113,22 +112,6 @@ async function main() {
     await prisma.orgSetting.create({ data: { masavInstitutionCode: '00000000', masavSenderName: '<CompNamePlaceHolder> בעמ', openingBalance: 250000 } });
   }
   console.log('  ✓ הגדרות ארגון (מס"ב)');
-
-  // ספקים — רשימה אמיתית מדוח אינדקס החשבונות בחשבשבת (מפתח חשבון + ע.מ). מע"מ ברירת מחדל 18%.
-  {
-    const existing = new Set((await prisma.supplier.findMany({ select: { hhAccountKey: true } })).map((s: { hhAccountKey: string | null }) => s.hhAccountKey));
-    const toCreate = SUPPLIERS_REAL.filter((s) => !existing.has(s.k)).map((s) => ({ name: s.n, hhAccountKey: s.k, taxId: s.t || null, vatRate: 18 }));
-    if (toCreate.length) await prisma.supplier.createMany({ data: toCreate });
-    console.log(`  ✓ ${toCreate.length} ספקים (מתוך ${SUPPLIERS_REAL.length} ברשימה)`);
-  }
-
-  // לקוחות — רשימה אמיתית מדוח אינדקס החשבונות בחשבשבת.
-  {
-    const existing = new Set((await prisma.customer.findMany({ select: { name: true } })).map((c: { name: string }) => c.name));
-    const toCreate = CUSTOMERS_REAL.filter((c) => !existing.has(c.n)).map((c) => ({ name: c.n, taxId: c.t || null }));
-    if (toCreate.length) await prisma.customer.createMany({ data: toCreate });
-    console.log(`  ✓ ${toCreate.length} לקוחות (מתוך ${CUSTOMERS_REAL.length} ברשימה)`);
-  }
 
   // פרויקטים
   for (const p of PROJECTS) {
