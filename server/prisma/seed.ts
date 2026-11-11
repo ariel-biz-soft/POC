@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { env } from '../src/env';
+import { logger } from '../src/util/logger';
 
 const prisma = new PrismaClient();
 
@@ -62,7 +63,7 @@ const PROJECTS = [
 ];
 
 async function main() {
-  console.log('זריעת נתונים...');
+  logger.seedStart();
 
   // תפקידים + הרשאות
   for (const r of ROLES) {
@@ -80,13 +81,13 @@ async function main() {
       });
     }
   }
-  console.log(`  ✓ ${ROLES.length} תפקידים ומטריצת הרשאות`);
+  logger.seedItemWithCount(ROLES.length, 'rolesMatrix');
 
   // סוגי הוצאה
   for (const name of EXPENSE_TYPES) {
     await prisma.expenseType.upsert({ where: { name }, update: {}, create: { name } });
   }
-  console.log(`  ✓ ${EXPENSE_TYPES.length} סוגי הוצאה`);
+  logger.seedItemWithCount(EXPENSE_TYPES.length, 'expenseTypes');
 
   // הגדרות שדות חובה לאישור חשבונית ספק — ניתן לעריכה ע"י מנהל המערכת
   const FIELD_SETTINGS = [
@@ -104,20 +105,20 @@ async function main() {
       create: f,
     });
   }
-  console.log(`  ✓ ${FIELD_SETTINGS.length} הגדרות שדות חובה`);
+  logger.seedItemWithCount(FIELD_SETTINGS.length, 'fieldSettings');
 
   // הגדרות ארגון (מס"ב + יתרת פתיחה לתזרים) — רשומה יחידה
   const orgExists = await prisma.orgSetting.findFirst();
   if (!orgExists) {
     await prisma.orgSetting.create({ data: { masavInstitutionCode: '00000000', masavSenderName: '<CompNamePlaceHolder> בעמ', openingBalance: 250000 } });
   }
-  console.log('  ✓ הגדרות ארגון (מס"ב)');
+  logger.seedItem('orgSettings');
 
   // פרויקטים
   for (const p of PROJECTS) {
     await prisma.project.upsert({ where: { code: p.code }, update: p, create: p });
   }
-  console.log(`  ✓ ${PROJECTS.length} פרויקטים`);
+  logger.seedItemWithCount(PROJECTS.length, 'projects');
 
   // עובדים
   const WORKERS = [
@@ -133,7 +134,7 @@ async function main() {
     if (!worker) worker = await prisma.worker.create({ data: w });
     workerIds[w.name] = worker.id;
   }
-  console.log(`  ✓ ${WORKERS.length} עובדים`);
+  logger.seedItemWithCount(WORKERS.length, 'workers');
 
   // ימי עבודה (עובד → פרויקט → ימים) לפי חודש
   const WORKDAYS: Record<string, Record<string, Record<string, number>>> = {
@@ -160,7 +161,7 @@ async function main() {
       }
     }
   }
-  console.log(`  ✓ ${wdCount} רשומות ימי עבודה`);
+  logger.seedItemWithCount(wdCount, 'workdays');
 
   // משתמש מנהל
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { key: 'admin' } });
@@ -176,13 +177,13 @@ async function main() {
       status: 'APPROVED',
     },
   });
-  console.log(`  ✓ משתמש מנהל: ${env.admin.email}`);
-  console.log('הזריעה הושלמה בהצלחה.');
+  logger.seedAdmin(env.admin.email);
+  logger.seedSuccess();
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    logger.seedFailed(e);
     process.exit(1);
   })
   .finally(async () => {

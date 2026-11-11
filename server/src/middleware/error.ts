@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+import { logger } from '../util/logger';
 
 export function notFound(_req: Request, res: Response) {
   res.status(404).json({ error: 'הנתיב לא נמצא' });
@@ -19,6 +20,6 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
   if (e?.code === 'P2002') {
     return res.status(409).json({ error: 'ערך כבר קיים (כפילות)' });
   }
-  console.error(err);
+  logger.internalError(err);
   res.status(500).json({ error: 'שגיאת שרת פנימית' });
 }

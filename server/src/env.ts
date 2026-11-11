@@ -10,6 +10,7 @@ function required(key: string, fallback?: string): string {
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
   port: parseInt(process.env.PORT ?? '4000', 10),
+  logLanguage: ((process.env.LogLanguage ?? process.env.LOG_LANGUAGE ?? 'EN').toUpperCase() === 'HE' ? 'HE' : 'EN') as 'EN' | 'HE',
   databaseUrl: required('DATABASE_URL'),
   jwtAccessSecret: required('JWT_ACCESS_SECRET', 'dev-access-secret'),
   jwtRefreshSecret: required('JWT_REFRESH_SECRET', 'dev-refresh-secret'),

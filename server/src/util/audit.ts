@@ -1,5 +1,6 @@
 import { prisma } from '../db';
 import type { Request } from 'express';
+import { logger } from './logger';
 
 /**
  * רישום פעולה ביומן הביקורת. נכשל בשקט (לא מפיל בקשה) כדי לא לחסום פעולה עסקית.
@@ -22,8 +23,9 @@ export async function audit(
         details,
       },
     });
+    logger.tabOp(entity, action, details);
   } catch (err) {
     // לא מפילים את הבקשה בגלל כשל ביומן
-    console.error('audit log failed', err);
+    logger.auditFailed(entity, err);
   }
 }
